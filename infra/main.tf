@@ -60,6 +60,7 @@ resource "docker_container" "generator" {
     env = [
         "KAFKA_BOOTSTRAP_SERVER=kafka:${var.kafka_network_port}",
         "KAFKA_TOPIC=${var.kafka_topic}",
+        "THROUGHPUT=${var.generator_throughput}",
     ]
 
     volumes {
@@ -95,12 +96,12 @@ resource "docker_container" "flink-taskmanager" {
 
     volumes {
       container_path = "/tmp/flink-savepoints"
-       host_path      = var.savepoints_dir
+       host_path      = var.savepoint_dir
     }
 
     volumes {
       container_path = "/tmp/flink-savepoints"
-       host_path      = var.savepoints_dir
+       host_path      = var.savepoint_dir
     }
 
     volumes {
@@ -128,7 +129,8 @@ resource "docker_container" "flink-jobmanager" {
      env = [ 
         "FLINK_PROPERTIES=${local.flink_properties}",
         "SOURCE_KAFKA_TOPIC=${var.kafka_topic}",
-        "SINK_FILE_PATH=${var.preprocess_output_dir}"
+        "SINK_FILE_PATH=${var.preprocess_output_dir}",
+        "PARALLELISM=${var.parallelism}"
      ]
 
     depends_on = [ docker_container.kafka ]

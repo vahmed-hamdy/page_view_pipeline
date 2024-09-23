@@ -49,7 +49,7 @@ variable "checkpoint_dir" {
 }
 
 
-variable "savepoints_dir" {
+variable "savepoint_dir" {
     description = "Flink savepoints directory"
     type        = string
     default     = "/tmp/flink-savepoints"
@@ -72,6 +72,19 @@ variable "flink_dashboard_port" {
     description = "Flink dashboard port"
     type        = number
     default     = 8081
+}
+
+
+variable "generator_throughput" {
+    description = "Generator throughput"
+    type        = number
+    default     = 100
+}
+
+variable "parallelism" {
+    description = "Flink job parallelism"
+    type        = number
+    default     = 1
 }
 
 locals {
