@@ -1,0 +1,26 @@
+---
+groups:
+- name: flink
+  rules:
+  - alert: FlinkTaskManagerMissing
+    expr: count(flink_taskmanager_Status_JVM_CPU_Time) < 1
+    for: 1m
+    annotations:
+      summary: Fewer Flink TaskManagers than expected are running.
+  
+  - alert: HighBackpressure
+    expr: avg by (task_name) (flink_taskmanager_job_task_backPressuredTimeMsPerSecond > 5000) # TODO: Configure thresholds
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Backpressure Detected for Task {{ $labels.task_name }}"
+      description: "Task {{ $labels.task_name }} in Job {{ $labels.job_name }} is experiencing high backpressure ({{ $value }}ms/s) for more than 5 minutes."
+  - alert: JobRestartsTooFrequent
+    expr: increase(flink_jobmanager_job_numRestarts[5m]) > 3 
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Job {{ $labels.job_name }} has restarted frequently"
+      description: "Job {{ $labels.job_name }} has restarted {{ $value }} times in the last 5 minutes, indicating potential instability."

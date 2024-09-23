@@ -1,0 +1,40 @@
+infra/.terraform
+infra/terraform.tfstate
+infra/terraform.tfstate.backup
+infra/.terraform.lock.hcl
+
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### IntelliJ IDEA ###
+generator/target/
+generator/dependency-reduced-pom.xml
+
+generator/.idea/
+generator/*.iws
+generator/*.iml
+generator/*.ipr
+generator/build
+generator/*.iws
+generator/*.iml
+generator/*.ipr
+
+flink-application/target/
+flink-application/dependency-reduced-pom.xml
+
+flink-application/.idea/
+flink-application/*.iws
+flink-application/*.iml
+flink-application/*.ipr
+flink-application/build
+flink-application/*.iws
+flink-application/*.iml
+flink-application/*.ipr
+
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store

@@ -1,0 +1,7 @@
+export FLINK_JOB_IMAGE="flink-processor:latest"
+export GENERATOR_IMAGE="generator:latest"
+export CHECKPOINT_DIR="/tmp/flink-checkpoints"
+export SAVEPOINT_DIR="/tmp/flink-savepoints"
+export GENERATOR_THROUPUT="1000"
+export PARALLELISM="1"
+export FLINK_DASHBOARD_PORT="8081"
