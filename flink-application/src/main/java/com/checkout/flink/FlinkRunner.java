@@ -49,7 +49,7 @@ public class FlinkRunner {
 
     dataStream
         .keyBy(PageViewItem::getPostcode)
-        .window(TumblingEventTimeWindows.of(Duration.ofSeconds(10)))
+        .window(TumblingEventTimeWindows.of(Duration.ofMinutes(1)))
         .aggregate(new PageViewAggregator(), new WindowProcessFunction())
         .sinkTo(configurationSelectorFactory.createSink(AggregatePageVisitStats.class, aggProperties));
     env.execute();

@@ -41,4 +41,3 @@ fi
 
 add_terraform_variables
 terraform apply $terraformVars  --auto-approve
-terraform apply --auto-approve
