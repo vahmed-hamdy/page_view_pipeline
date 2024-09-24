@@ -61,10 +61,10 @@ public class PageView implements KeyedRecord {
 
         @Override
         public PageView generateRandom(Random random, Instant timestamp) {
-            String postcode = faker.regexify("[A-Z]{2}[0-9]{2}");
+            String postcode = faker.regexify("[A-F]{2}[0-9]{1}");
             return PageView.builder()
                     .userId(random.nextInt(userCount))
-                    .webPageUrl("https://www.website.com/" + paths[random.nextInt(paths.length)])
+                    .webPageUrl("https://www.website.com" + paths[random.nextInt(paths.length)])
                     .postcode(postcode)
                     .timestamp(timestamp.toEpochMilli() / 1000)
                     .build();

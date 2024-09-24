@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.api.connector.sink2.Sink;
 import org.apache.flink.api.connector.source.Source;
 
+import java.util.Properties;
+
 @Builder
 @Slf4j
 public class ConfigurationSelectorFactory implements SourceFactory, SinkFactory {
@@ -35,11 +37,11 @@ public class ConfigurationSelectorFactory implements SourceFactory, SinkFactory 
   }
 
   @Override
-  public <T> Sink<T> createSink(Class<T> type) {
+  public <T> Sink<T> createSink(Class<T> type, Properties args) {
     String sinkType = SINK_TYPE.load(configuration);
     switch (sinkType) {
       case "file":
-        return new FileSystemSinkFactory(configuration).createSink(type);
+        return new FileSystemSinkFactory().createSink(type, args);
       default:
         throw new IllegalArgumentException("Unknown sink type: " + sinkType);
     }

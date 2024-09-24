@@ -129,7 +129,8 @@ resource "docker_container" "flink-jobmanager" {
      env = [ 
         "FLINK_PROPERTIES=${local.flink_properties}",
         "SOURCE_KAFKA_TOPIC=${var.kafka_topic}",
-        "SINK_FILE_PATH=${var.preprocess_output_dir}",
+        "SINK_PREPROCESEED_FILE_PATH=${var.preprocess_output_dir}",
+        "SINK_AGG_FILE_PATH=${var.processed_output_dir}",
         "PARALLELISM=${var.parallelism}"
      ]
 
