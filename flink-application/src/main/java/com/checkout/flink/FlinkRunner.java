@@ -12,6 +12,7 @@ import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.ProcessWindowFunction;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows;
+import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 
@@ -21,9 +22,11 @@ public class FlinkRunner {
       ConfigurationOption.intOption("parallelism", "PARALLELISM", false, 1);
 
   private static final ConfigurationOption<String> preprocessedOutputPath =
-          ConfigurationOption.stringOption("sink.file.preprocessed-path", "SINK_PREPROCESEED_FILE_PATH", true, null);
+          ConfigurationOption.stringOption("sink.file.preprocessed-path", "SINK_PREPROCESEED_FILE_PATH", false,
+                  "/tmp/checkout/preprocessed");
   private static final ConfigurationOption<String> aggregateOutputPath =
-          ConfigurationOption.stringOption("sink.file.agg-path", "SINK_AGG_FILE_PATH", true, null);
+          ConfigurationOption.stringOption("sink.file.agg-path", "SINK_AGG_FILE_PATH", false,
+                  "/tmp/checkout/agg");
 
   public static void main(String[] args) throws Exception {
     // TODO: move to a separate class and parametrize checkpointing
@@ -49,7 +52,7 @@ public class FlinkRunner {
 
     dataStream
         .keyBy(PageViewItem::getPostcode)
-        .window(TumblingEventTimeWindows.of(Duration.ofMinutes(1)))
+        .window(TumblingEventTimeWindows.of(Time.minutes(1)))
         .aggregate(new PageViewAggregator(), new WindowProcessFunction())
         .sinkTo(configurationSelectorFactory.createSink(AggregatePageVisitStats.class, aggProperties));
     env.execute();

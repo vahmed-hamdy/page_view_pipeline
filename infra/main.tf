@@ -155,6 +155,44 @@ resource "docker_container" "flink-jobmanager" {
     ]
 }
 
+resource "docker_container" "nginx_container" {
+  name  = "nginx_reverse_proxy"
+  image = "nginx:latest"
+
+  # Mount the local configuration file to the container
+  mounts {
+    target = "/etc/nginx/nginx.conf"
+    source =  abspath("${path.module}/config/nginx.conf")
+    type   = "bind"
+  }
+  mounts {
+    target = "/etc/ssl/certs/nginx-cert.pem"
+    source =  abspath("${path.module}/config/keys/nginx-cert.pem")
+    type   = "bind"
+  }
+
+  mounts {
+    target = "/etc/ssl/private/nginx-key.pem"
+    source =  abspath("${path.module}/config/keys/nginx-key.pem")
+    type   = "bind"
+  }
+
+  mounts {
+    target = "/etc/ssl/certs/ca-cert.pem"
+    source = abspath("${path.module}/config/keys/ca-cert.pem")
+    type   = "bind"
+  }
+
+  ports {
+    internal = 443
+    external = 8443
+  }
+
+  networks_advanced {
+    name = docker_network.pipeline_network.name
+  }
+}
+
 resource "docker_container" "prometheus" {
   image = "prom/prometheus"
   name  = "prometheus"
@@ -180,7 +218,7 @@ resource "docker_container" "prometheus" {
 
 
 output "flink_dashboard_url" {
-  value = "http://localhost:${var.flink_dashboard_port}"
+  value = "http://localhost:8075"
 }
 
 output "promehteus_url" {

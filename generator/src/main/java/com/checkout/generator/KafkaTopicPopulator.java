@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -30,7 +31,7 @@ public class KafkaTopicPopulator {
     private static final ConfigurationOption<String> BOOTSTRAP_SERVERS
             = ConfigurationOption.stringOption("bootstrap.servers",
             "KAFKA_BOOTSTRAP_SERVER",
-            true, "localhost:9092");
+            true, "ec2-18-197-31-16.eu-central-1.compute.amazonaws.com:9092");
     private static final ConfigurationOption<String> TOPIC
             = ConfigurationOption.stringOption("topic",
             "KAFKA_TOPIC",
@@ -47,6 +48,11 @@ public class KafkaTopicPopulator {
             false, 100);
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
+//        adminMain();
+        produceMain();
+    }
+
+    public static void produceMain() throws ExecutionException, InterruptedException {
         log.info("Starting to produce to topic: {}", TOPIC.loadFromEnv());
         produceToTopic(
                 new KafkaProducer<>(getProducerProperties(BOOTSTRAP_SERVERS.loadFromEnv())),
@@ -57,6 +63,38 @@ public class KafkaTopicPopulator {
                         new PageView.PageViewGenerator()));
 
         log.info("Finished producing to topic: {}", TOPIC.loadFromEnv());
+    }
+
+    public static void adminMain() throws ExecutionException, InterruptedException {
+//        cleanup.policy=compact
+        List<String> topicsToCreate = List.of("Orders", "Products", "Customers", "Shipments", "Payments", "ExchangeRates");
+        List<String> topicsToDelete = List.of("ExchangeRates");
+        createTopic(List.of("ExchangeRates"), Collections.emptyList(),
+                "ec2-18-197-31-16.eu-central-1.compute.amazonaws.com:9092");
+    }
+
+    public static void createTopic(List<String> topicsToCreate, List<String> topicsToDelete, String bootstrapServers) throws ExecutionException, InterruptedException {
+        Properties props = getCommonProperties(bootstrapServers);
+//        props.put("cleanup.policy", "compact");
+        try (AdminClient adminClient = AdminClient.create(props)) {
+            final Set<String> topics = adminClient.listTopics().names().get();
+            List<NewTopic> newTopics = topicsToCreate.stream()
+                    .filter(topic -> !topics.contains(topic))
+                    .map(topic -> new NewTopic(topic, 1, (short) 1))
+                    .collect(Collectors.toList());
+            List<String> topicsToDeleteFiltered = topicsToDelete.stream()
+                    .filter(topics::contains)
+                    .collect(Collectors.toList());
+            if (!newTopics.isEmpty()) {
+                adminClient.createTopics(newTopics).all().get();
+            }
+            if (!topicsToDeleteFiltered.isEmpty()) {
+                adminClient.deleteTopics(topicsToDeleteFiltered).all().get();
+            }
+            Set<String> updatedTopics = adminClient.listTopics().names().get();
+            log.info("Updated topics: ");
+            updatedTopics.forEach(t -> log.info("Topic: {}", t));
+        }
     }
 
     public static <T extends KeyedRecord> void produceToTopic(Producer<byte[], byte[]> producer, String topic, long limit, Generator<T> generator) throws ExecutionException, InterruptedException {

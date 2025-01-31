@@ -12,10 +12,10 @@ import org.apache.flink.connector.kafka.source.enumerator.initializer.OffsetsIni
 @AllArgsConstructor
 public class KafkaSourceFactory implements SourceFactory {
   private static final ConfigurationOption<String> TOPIC =
-      ConfigurationOption.stringOption("topic", "SOURCE_KAFKA_TOPIC", true, null);
+      ConfigurationOption.stringOption("topic", "SOURCE_KAFKA_TOPIC", false, "default-topic");
   private static final ConfigurationOption<String> BOOTSTRAP_SERVERS =
       ConfigurationOption.stringOption(
-          "bootstrap.servers", "SOURCE_KAFKA_BOOTSTRAP_SERVERS", true, null);
+          "bootstrap.servers", "SOURCE_KAFKA_BOOTSTRAP_SERVERS", false, "localhost:9092");
   private static final ConfigurationOption<String> GROUP_ID =
       ConfigurationOption.stringOption(
           "group.id",

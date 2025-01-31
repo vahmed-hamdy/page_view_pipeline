@@ -15,9 +15,9 @@ import java.util.Properties;
 @Slf4j
 public class ConfigurationSelectorFactory implements SourceFactory, SinkFactory {
   private static final ConfigurationOption<String> SOURCE_TYPE =
-      ConfigurationOption.stringOption("source.type", "SOURCE_TYPE", true, null);
+      ConfigurationOption.stringOption("source.type", "SOURCE_TYPE", false, "kafka");
   private static final ConfigurationOption<String> SINK_TYPE =
-      ConfigurationOption.stringOption("sink.type", "SINK_TYPE", true, null);
+      ConfigurationOption.stringOption("sink.type", "SINK_TYPE", false, "file");
 
   private final Configuration configuration;
 
